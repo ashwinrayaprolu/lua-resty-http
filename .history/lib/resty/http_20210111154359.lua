@@ -847,7 +847,7 @@ function _M.request_uri(self, uri, params)
     -- See if we should use a proxy to make this request
     --local proxy_uri = self:get_proxy_uri(scheme, host)
     local proxy_uri = self.proxy_opts.http_proxy
-    ngx.log(INFO, "-------Using Proxy : "...proxy_uri)
+
     -- Make the connection either through the proxy or directly
     -- to the remote host
     local c, err
