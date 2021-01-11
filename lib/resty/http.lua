@@ -845,9 +845,10 @@ function _M.request_uri(self, uri, params)
     if not params.path then params.path = path end
     if not params.query then params.query = query end
 
+    ngx.log(ngx.INFO, "   Proxy URL :", self.proxy_opts.http_proxy)
     -- See if we should use a proxy to make this request
-    --local proxy_uri = self:get_proxy_uri(scheme, host)
-    local proxy_uri = "http://proxy-east.infra.cloud.247-inc.net:3128/"
+    local proxy_uri = self:get_proxy_uri(scheme, host)
+    --local proxy_uri = "http://proxy-east.infra.cloud.247-inc.net:3128/"
     ngx.log( ngx.INFO, "-------Using Proxy : ", proxy_uri)
     -- Make the connection either through the proxy or directly
     -- to the remote host
