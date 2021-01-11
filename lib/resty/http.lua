@@ -96,6 +96,7 @@ local function tbl_copy(orig)
     if orig_type == "table" then
         copy = {}
         for orig_key, orig_value in next, orig, nil do
+            ngx.log(ngx.INFO, " Proxy Param ", orig_key , "   --Value -- ", orig_value)
             copy[tbl_copy(orig_key)] = tbl_copy(orig_value)
         end
     else -- number, string, boolean, etc
@@ -106,7 +107,7 @@ end
 
 
 local _M = {
-    _VERSION = '0.14',
+    _VERSION = '0.15',
 }
 _M._USER_AGENT = "lua-resty-http/" .. _M._VERSION .. " (Lua) ngx_lua/" .. ngx.config.ngx_lua_version
 
@@ -846,8 +847,8 @@ function _M.request_uri(self, uri, params)
 
     -- See if we should use a proxy to make this request
     --local proxy_uri = self:get_proxy_uri(scheme, host)
-    local proxy_uri = self.proxy_opts.http_proxy
-    ngx.log(INFO, "-------Using Proxy : "...proxy_uri)
+    local proxy_uri = "http://proxy-east.infra.cloud.247-inc.net:3128/"
+    ngx.log( ngx.INFO, "-------Using Proxy : ", proxy_uri)
     -- Make the connection either through the proxy or directly
     -- to the remote host
     local c, err
