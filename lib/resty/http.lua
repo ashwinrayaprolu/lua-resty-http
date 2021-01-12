@@ -96,7 +96,7 @@ local function tbl_copy(orig)
     if orig_type == "table" then
         copy = {}
         for orig_key, orig_value in next, orig, nil do
-            ngx.log(ngx.INFO, " Proxy Param ", orig_key , "   --Value -- ", orig_value)
+            ---ngx.log(ngx.INFO, " Proxy Param ", orig_key , "   --Value -- ", orig_value)
             copy[tbl_copy(orig_key)] = tbl_copy(orig_value)
             --copy[orig_key] = orig_value
         end
