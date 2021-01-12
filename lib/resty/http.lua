@@ -1109,9 +1109,9 @@ end
 
 function _M.get_proxy_uri(self, scheme, host)
 
-    if not self.proxy_opts then
-        return nil
-    end
+    --if not self.proxy_opts then
+    ---    return nil
+    ---end
 
     -- Check if the no_proxy option matches this host. Implementation adapted
     -- from lua-http library (https://github.com/daurnimator/lua-http)
