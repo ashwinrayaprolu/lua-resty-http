@@ -1108,6 +1108,12 @@ end
 
 
 function _M.get_proxy_uri(self, scheme, host)
+
+    if os.getenv("http_proxy")  then
+        log(DEBUG, " --- HTTP Proxy from env " .. os.getenv("http_proxy"))
+        return os.getenv("http_proxy")
+    end
+
     if not self.proxy_opts then
         return nil
     end
