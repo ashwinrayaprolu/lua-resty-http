@@ -97,14 +97,77 @@ local function tbl_copy(orig)
         copy = {}
         for orig_key, orig_value in next, orig, nil do
             ngx.log(ngx.INFO, " Proxy Param ", orig_key , "   --Value -- ", orig_value)
-            --copy[tbl_copy(orig_key)] = tbl_copy(orig_value)
-            copy[orig_key] = orig_value
+            copy[tbl_copy(orig_key)] = tbl_copy(orig_value)
+            --copy[orig_key] = orig_value
         end
     else -- number, string, boolean, etc
         copy = orig
     end
     return copy
 end
+
+
+-- Deep Copy table
+-- https://gist.githubusercontent.com/cpeosphoros/0aa286c6b39c1e452d9aa15d7537ac95/raw/9754d59308fcb7ce4a51c206bc371d220b3fa47a/deepcopy.lua
+local function deepCopy(value, cache, promises, copies)
+	cache    = cache    or {}
+	promises = promises or {}
+	copies   = copies   or {}
+	local copy
+    if type(value) == 'table' then
+		if(cache[value]) then
+			copy = cache[value]
+		else
+			promises[value] = promises[value] or {}
+			copy = {}
+			for k, v in next, value, nil do
+				local nKey   = promises[k] or deepCopy(k, cache, promises, copies)
+				local nValue = promises[v] or deepCopy(v, cache, promises, copies)
+				copies[nKey]   = type(k) == "table" and k or nil
+				copies[nValue] = type(v) == "table" and v or nil
+				copy[nKey] = nValue
+			end
+			local mt = getmetatable(value)
+			if mt then
+				setmetatable(copy, mt.__immutable and mt or deepCopy(mt, cache, promises, copies))
+			end
+			cache[value]    = copy
+		end
+    else -- number, string, boolean, etc
+        copy = value
+    end
+	for k, v in pairs(copies) do
+		if k == cache[v] then
+			copies[k] = nil
+		end
+	end
+	local function correctRec(tbl)
+		if type(tbl) ~= "table" then return tbl end
+		if copies[tbl] and cache[copies[tbl]] then
+			return cache[copies[tbl]]
+		end
+		local new = {}
+		for k, v in pairs(tbl) do
+			local oldK = k
+			k, v = correctRec(k), correctRec(v)
+			if k ~= oldK then
+				tbl[oldK] = nil
+				new[k] = v
+			else
+				tbl[k] = v
+			end
+		end
+		for k, v in pairs(new) do
+			tbl[k] = v
+		end
+		return tbl
+	end
+	correctRec(copy)
+    return copy
+end
+--return deepCopy
+
+
 
 
 local _M = {
@@ -1040,7 +1103,7 @@ end
 
 
 function _M.set_proxy_options(self, opts)
-    self.proxy_opts = tbl_copy(opts) -- Take by value
+    self.proxy_opts = deepCopy(opts) -- Take by value
 end
 
 
